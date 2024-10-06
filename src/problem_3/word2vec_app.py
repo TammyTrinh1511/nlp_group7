@@ -1,24 +1,16 @@
 import numpy as np
 import pandas as pd
 import streamlit as st
+from gensim.models import KeyedVectors
 
 from .custom_word2vec import CustomWord2Vec
 from .streamlit_base import StreamlitBase
 
 
 class Word2VecAnalysisApp(StreamlitBase):
-    """
-    Streamlit application for analyzing word embeddings using Word2Vec.
+    """Streamlit application for analyzing word embeddings using Word2Vec."""
 
-    This class provides a user interface to perform various word2vec analyses, including word analogy,
-    finding most similar words, and identifying the odd one out among a group of words. It utilizes
-    dimensionality reduction techniques for visualization.
-
-    Attributes:
-        custom_model: An instance of CustomWord2Vec for performing word similarity calculations.
-    """
-
-    def __init__(self, model):
+    def __init__(self, model: KeyedVectors) -> None:
         """
         Initialize the Word2VecAnalysisApp with a word2vec model.
 
@@ -27,7 +19,7 @@ class Word2VecAnalysisApp(StreamlitBase):
         """
         super().__init__(model)
 
-    def run(self):
+    def run(self) -> None:
         """Run the Streamlit app for Word2Vec analysis."""
         st.title("Word2Vec Analysis")
         feature = st.selectbox(
@@ -51,7 +43,7 @@ class Word2VecAnalysisApp(StreamlitBase):
         elif feature == "Doesn't Match":
             self.doesnt_match(method, dimension)
 
-    def word_analogy(self, method: str, dimension: str):
+    def word_analogy(self, method: str, dimension: str) -> None:
         """
         Perform word analogy based on user input and visualize the results.
 
@@ -105,7 +97,7 @@ class Word2VecAnalysisApp(StreamlitBase):
             else:
                 st.warning("Please enter both positive and negative words.")
 
-    def most_similar(self, method: str, dimension: str):
+    def most_similar(self, method: str, dimension: str) -> None:
         """
         Find and visualize the most similar words based on user input.
 
@@ -150,7 +142,7 @@ class Word2VecAnalysisApp(StreamlitBase):
             else:
                 st.warning("Please enter words to find similar words.")
 
-    def doesnt_match(self, method: str, dimension: str):
+    def doesnt_match(self, method: str, dimension: str) -> None:
         """
         Identify and visualize the word that doesn't match in a given list.
 
