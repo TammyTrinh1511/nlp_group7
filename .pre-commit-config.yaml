@@ -27,7 +27,7 @@ repos:
           [
             "--ignore=D100, D200, D205, D400, D401, D104, W503, W504, D401, E402, E203",
             "--max-line-length",
-            "88",
+            "105",
           ]
         additional_dependencies:
           [

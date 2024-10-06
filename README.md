@@ -1,3 +1,4 @@
+## Please install `python==3.9`
 # Pre-commit Hook Setup
 
 This repository uses [pre-commit](https://pre-commit.com/) to ensure code quality and consistency before every commit. Pre-commit hooks automatically run checks like linting, formatting, and testing on the code before it's committed.
