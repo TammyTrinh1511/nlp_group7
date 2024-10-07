@@ -1,0 +1,16 @@
+data_ingestion:
+  data_path: 'path/to/data.csv'
+  data_map:
+    target: 'sentiment'
+    variables: ['tweet_text']
+
+preprocessing:
+  train_test_split_params:
+    test_size: 0.2
+    random_state: 42
+
+features_engineering:
+  feature_creation: True
+
+model_training:
+  models: ['Logistic Regression','SVC','Random Forest', 'Naives Bayes', 'LightGBM']
