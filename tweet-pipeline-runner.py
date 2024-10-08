@@ -2,6 +2,7 @@ import logging
 import yaml
 import warnings
 import nltk
+import argparse
 from nltk.corpus import twitter_samples
 from module.preprocess import Preprocessor
 from module.train import Trainer
@@ -11,19 +12,57 @@ from module.tuning import Tuner
 # Ignore all warnings
 warnings.filterwarnings("ignore")
 
-# Load configuration from YAML file
-with open('module/config.yaml', 'r') as stream:
-    # Using safe_load to avoid unsafe loading warnings
-    config = yaml.safe_load(stream)
-
 # Logging configuration
 logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s',
                     datefmt='%m/%d/%Y %I:%M:%S %p',
                     level=logging.INFO)
 
 
+def str2bool(value):
+    """
+    Helper function to convert string input to boolean.
+    """
+    if isinstance(value, bool):
+        return value
+    if value.lower() in ('true', 't', 'yes', '1'):
+        return True
+    elif value.lower() in ('false', 'f', 'no', '0'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Boolean value expected.')
+
+
+def parse_args():
+    """
+    Parses command-line arguments for the pipeline runner.
+    """
+    parser = argparse.ArgumentParser(
+        description='Machine Learning Pipeline Runner')
+
+    # Boolean argument for model tuning (True or False)
+    parser.add_argument('--tune', type=str2bool, default=False,
+                        help='Whether to tune the models. Options: True, False.')
+
+    # Argument to select which model to train
+    parser.add_argument('--model', type=str, default='all',
+                        help='Specify the model to train. Options: "Logistic Regression", "SVC", "Random Forest", "Naive Bayes", "all".')
+
+    # Argument to evaluate a specific model or all models
+    parser.add_argument('--evaluate', type=str, default='all',
+                        help='Specify which model to evaluate. Use "--evaluate all" for evaluating all models or specify a single model name.')
+
+    return parser.parse_args()
+
+
 def main():
+    # Parse the arguments
+    args = parse_args()
+
     logging.info("Pipeline execution started.")
+
+    # Load configuration from YAML file
+    with open('module/config.yaml', 'r') as stream:
+        config = yaml.safe_load(stream)
 
     # Step 1: Data Ingestion
     nltk.download('twitter_samples')
@@ -45,32 +84,59 @@ def main():
 
     # Step 3: Feature Engineering (if needed)
     logging.info("Feature engineering started.")
-    # (You can add feature engineering steps here if needed)
     logging.info("Feature engineering finished.")
 
     # Step 4: Model Training
     logging.info("Model training started.")
     trainer = Trainer()
-    trainer.train_all_models(X_train, y_train, X_test, y_test)
+
+    if args.model == 'all':
+        trainer.train_all_models(X_train, y_train, X_test, y_test)
+    else:
+        logging.info(f"Training only {args.model}.")
+        trainer.train_model(args.model, X_train, y_train)
+
     logging.info("Model training completed.")
 
     # Step 5: Model Evaluation
     logging.info("Model evaluation started.")
     evaluator = ModelEvaluator()
-    logistic_errors = evaluator.error_analysis(trainer.train_model(
-        'Logistic Regression', X_train, y_train), X_test, y_test, test_x)
-    logging.info("Model evaluation completed. Errors for Logistic Regression:")
-    logging.info(f"\n{logistic_errors}")
 
-    # # Step 6: Model Tuning (optional)
-    # logging.info("Model tuning started.")
-    # tuner = Tuner()
-    # rf_best_model, rf_best_params = tuner.tune_random_forest(X_train, y_train)
-    # logging.info(
-    #     f"Random Forest tuning completed. Best parameters: {rf_best_params}")
+    if args.evaluate == 'all':
+        logging.info("Evaluating all models.")
+        for model_name in trainer.models.keys():
+            errors = evaluator.error_analysis(trainer.train_model(
+                model_name, X_train, y_train), X_test, y_test, test_x)
+            logging.info(f"Errors for {model_name}:")
+            logging.info(f"\n{errors}")
+    else:
+        logging.info(f"Evaluating only {args.evaluate}.")
+        errors = evaluator.error_analysis(trainer.train_model(
+            args.evaluate, X_train, y_train), X_test, y_test, test_x)
+        logging.info(f"Errors for {args.evaluate}:")
+        logging.info(f"\n{errors}")
+
+    logging.info("Model evaluation completed.")
+
+    # Step 6: Model Tuning (if requested)
+    if args.tune:
+        logging.info("Model tuning started.")
+        tuner = Tuner()
+
+        # Example: Tuning Random Forest
+        if args.model == 'Random Forest' or args.model == 'all':
+            logging.info("Tuning Random Forest model.")
+            rf_best_model, rf_best_params = tuner.tune_random_forest(
+                X_train, y_train)
+            logging.info(
+                f"Random Forest tuning completed. Best parameters: {rf_best_params}")
 
     logging.info("Pipeline execution finished successfully.")
 
 
 if __name__ == "__main__":
     main()
+
+
+# To run the tweet-pipeline-runner.py script, execute the following command:
+# python tweet-pipeline-runner.py --model all --evaluate all --tune 0
