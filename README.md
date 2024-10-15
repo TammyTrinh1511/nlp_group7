@@ -1,29 +1,31 @@
-## Please install `python==3.9`
-# Pre-commit Hook Setup
 
-This repository uses [pre-commit](https://pre-commit.com/) to ensure code quality and consistency before every commit. Pre-commit hooks automatically run checks like linting, formatting, and testing on the code before it's committed.
+# A Comprehensive Approach to Sentiment Analysis
+NLP project about TF-IDF, Word Embeddings, and Machine Learning
+- Task 1, 2: Sentiment analysis using TF-IDF, N-Grams, and Machine Learning with Hyperparameters Tuning
+- Task 3: Streamlit app for analyzing word embeddings using Word2Vec, dimensionality reduction, visualization, and word vector validation
 
-Extension Trailing Spaces -> detect trailing spaces code-server
+## Requirements
+`python>=3.9`
+
 ## Installation
-
-### 1. Install Pre-commit
-
-To install `pre-commit`, first ensure you have Python and `pip` installed, then run the following command:
-
 ```bash
-pip install pre-commit
-```
-### 2. Install the Git Hooks
-
-Once `pre-commit` is installed, run the following command to install the pre-commit hooks into your local Git repository:
-
-```bash
+pip install -r requirements.txt
 pre-commit install
 ```
-### 3. Running Pre-commit Hooks
-Once installed, the hooks will run automatically every time you make a commit. If any issues are found, the commit will be rejected until they are fixed.
 
-After finish coding. To manually run the pre-commit hooks on all files, use:
+## Usage
+- Task 1, 2:
 ```bash
-pre-commit run --all-files
+python tweet-pipeline-runner.py --model all --evaluate all --tune 0
 ```
+- Task 3:
+```bash
+streamlit run streamlit_app.py
+```
+
+## Team Members
+- Trinh Thi Minh Tam
+- Truong Dinh Viet
+- Le Thi Quynh Anh
+- Bui Phuong Thao
+- Tran Hai Nam

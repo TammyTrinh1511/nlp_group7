@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 
 import numpy as np
 from gensim.models import KeyedVectors
@@ -55,7 +55,7 @@ class CustomWord2Vec:
         positive_list: List[str],
         negative_list: Optional[List[str]] = None,
         topn=10,
-    ):
+    ) -> List[Tuple[str, float]]:
         """
         Find the most similar words based on a word analogy (e.g., king - man + woman).
 
@@ -66,7 +66,8 @@ class CustomWord2Vec:
             topn (int): The number of top similar words to return.
 
         Returns:
-            list: A sorted list of tuples containing words and their similarity scores, limited to top N.
+           list (List[Tuple[str, float]]): A sorted list of tuples containing words and their
+           similarity scores, limited to top N.
         """
         positive_vecs = np.array([self.model[word] for word in positive_list])
         negative_vecs = (
@@ -84,12 +85,12 @@ class CustomWord2Vec:
         # Sort and return top N words
         return sorted(similarities.items(), key=lambda x: x[1], reverse=True)[:topn]
 
-    def doesnt_match(self, word_list):
+    def doesnt_match(self, word_list: List[str]) -> str:
         """
         Identify the word that does not match the others in a given list.
 
         Args:
-            word_list (list of str): A list of words to check for the odd one out.
+            word_list (List[str]): A list of words to check for the odd one out.
 
         Returns:
             str: The word that is most dissimilar to the others.
